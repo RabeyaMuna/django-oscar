@@ -1,13 +1,6 @@
 name: Tests
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-
+on: push
 permissions:
   contents: read
 
@@ -22,16 +15,17 @@ jobs:
         django-version: ['4.2', '5.2']
         exclude:
           # Django 5.2(LTS) supports python 3.10 and up.
-          - django-version: '5.2'
-            python-version: '3.8'
-          - django-version: '5.2'
-            python-version: '3.9'
+        - django-version: '5.2'
+          python-version: '3.8'
+        - django-version: '5.2'
+          python-version: '3.9'
     services:
       postgres:
         image: postgres:14
         ports:
-          - 5432/tcp
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        - 5432/tcp
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
