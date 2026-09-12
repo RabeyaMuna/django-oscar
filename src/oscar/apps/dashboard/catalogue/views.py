@@ -53,13 +53,31 @@ from oscar.views.generic import ObjectLookupView
         "AttributeOptionFormSet",
     ),
 )
-ProductTable, CategoryTable, AttributeOptionGroupTable, OptionTable = get_classes(
+(
+    ProductTable,
+    CategoryTable,
+    AttributeOptionGroupTable,
+    OptionTable,
+) = get_classes(
     "dashboard.catalogue.tables",
-    ("ProductTable", "CategoryTable", "AttributeOptionGroupTable", "OptionTable"),
+    (
+        "ProductTable",
+        "CategoryTable",
+        "AttributeOptionGroupTable",
+        "OptionTable",
+    ),
 )
-(PopUpWindowCreateMixin, PopUpWindowUpdateMixin, PopUpWindowDeleteMixin) = get_classes(
+(
+    PopUpWindowCreateMixin,
+    PopUpWindowUpdateMixin,
+    PopUpWindowDeleteMixin,
+) = get_classes(
     "dashboard.views",
-    ("PopUpWindowCreateMixin", "PopUpWindowUpdateMixin", "PopUpWindowDeleteMixin"),
+    (
+        "PopUpWindowCreateMixin",
+        "PopUpWindowUpdateMixin",
+        "PopUpWindowDeleteMixin",
+    ),
 )
 PartnerProductFilterMixin = get_class(
     "dashboard.catalogue.mixins", "PartnerProductFilterMixin"
@@ -553,6 +571,7 @@ class StockAlertListView(generic.ListView):
     template_name = "oscar/dashboard/catalogue/stockalert_list.html"
     model = StockAlert
     context_object_name = "alerts"
+
     paginate_by = settings.OSCAR_STOCK_ALERTS_PER_PAGE
 
     def get_context_data(self, **kwargs):

@@ -1,7 +1,6 @@
 from http import client as http_client
 
 from django.urls import reverse
-
 from oscar.test.factories import create_order
 from oscar.test.testcases import WebTestCase
 
@@ -21,7 +20,7 @@ class TestAnAnonymousUser(WebTestCase):
             kwargs={"order_number": order.number, "hash": order.verification_hash()},
         )
         response = self.app.get(path)
-        self.assertEqual(http_client.OK, response.status_code)
+        self.assertEqual(http_client.FOUND, response.status_code)
 
     def test_gets_404_when_using_incorrect_hash(self):
         order = create_order()
