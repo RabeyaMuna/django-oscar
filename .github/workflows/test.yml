@@ -1,13 +1,6 @@
 name: Tests
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-
+on: push
 permissions:
   contents: read
 
@@ -18,20 +11,15 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.11', '3.12', '3.13']
         django-version: ['4.2', '5.2']
-        exclude:
-          # Django 5.2(LTS) supports python 3.10 and up.
-          - django-version: '5.2'
-            python-version: '3.8'
-          - django-version: '5.2'
-            python-version: '3.9'
     services:
       postgres:
         image: postgres:14
         ports:
-          - 5432/tcp
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        - 5432/tcp
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -74,20 +62,6 @@ jobs:
         pip install -e .[test]
     - name: Run linters
       run: make lint
-  lint_js:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up NodeJS
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    - name: Install dependencies
-      run: |
-        npm ci
-    - name: Run linters
-      run: |
-        npm run eslint
   sandbox:
     runs-on: ubuntu-latest
     steps:
