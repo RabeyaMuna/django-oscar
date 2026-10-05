@@ -298,7 +298,7 @@ class AbstractCategory(MP_Node):
         if you don't want to include the category itself. It's a separate
         function as it's commonly used in templates.
         """
-        return self.get_tree(self)
+        return list(self.get_descendants()) + [self]
 
     def get_url_cache_key(self):
         current_locale = get_language()
