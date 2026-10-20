@@ -195,7 +195,6 @@ class ProductCreateRedirectView(generic.RedirectView):
         if form.is_valid():
             product_class = form.cleaned_data["product_class"]
             return self.get_product_create_url(product_class)
-
         else:
             return self.get_invalid_product_class_url()
 

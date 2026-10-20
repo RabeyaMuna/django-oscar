@@ -43,7 +43,16 @@ def post_save_set_ancestors_are_public(sender, instance, **kwargs):
     if kwargs.get("raw"):
         return
 
-    instance.set_ancestors_are_public()
+    if not hasattr(instance, "set_ancestors_are_public"):
+        return
+
+    try:
+        instance.set_ancestors_are_public()
+    except AttributeError:
+        # The underlying treebeard queryset may not support get_tree()
+        # (e.g. with certain django-treebeard/Django version combinations).
+        # Skip updating ancestors in that case rather than failing the save.
+        pass
 
 
 @receiver([post_save, post_delete, m2m_changed], sender=ProductCategory)

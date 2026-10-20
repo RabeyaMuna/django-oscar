@@ -234,7 +234,7 @@ class BasketView(ModelFormSetView):
         )
 
     def move_line_to_saved_basket(self, line):
-        saved_basket, _ = get_model("basket", "basket").saved.get_or_create(
+        saved_basket, _ = get_model("basket", "Basket").saved.get_or_create(
             owner=self.request.user
         )
         saved_basket.merge_line(line)
@@ -504,7 +504,7 @@ class VoucherRemoveView(View):
 
 class SavedView(ModelFormSetView):
     model = get_model("basket", "line")
-    basket_model = get_model("basket", "basket")
+    basket_model = get_model("basket", "Basket")
     formset_class = SavedLineFormSet
     form_class = SavedLineForm
     factory_kwargs = {"extra": 0, "can_delete": True}

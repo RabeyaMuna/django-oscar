@@ -103,3 +103,4 @@ if not is_model_registered("catalogue", "ProductCategoryHierarchy"):
         pass
 
     __all__.append("ProductCategoryHierarchy")
+
