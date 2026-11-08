@@ -74,7 +74,9 @@ test = [
     "freezegun>=1.5.1,<2.0.0",
     "pytz",
     "vdt.versionplugin.wheel",
-    "pylint>=3.2.4",
+    # pylint>=4.0 has a super()/E1101 inference regression that produces
+    # false positives on otherwise-valid field/form subclasses.
+    "pylint>=3.2.4,<4.0",
     "pylint-django>=2.5.5",
     "black>=24.4.2",
     "psycopg2-binary>=2.8,<2.10",

@@ -3,7 +3,7 @@ from collections import defaultdict
 from django.db import models
 from django.db.models import Exists, OuterRef, Prefetch, F
 from django.db.models.constants import LOOKUP_SEP
-from treebeard.mp_tree import MP_NodeQuerySet
+from treebeard.mp_tree import MP_NodeManager, MP_NodeQuerySet
 
 from oscar.core.loading import get_model
 
@@ -253,3 +253,8 @@ class CategoryQuerySet(MP_NodeQuerySet):
         Browsable categories that are not excluded for the menu
         """
         return self.browsable().exclude(exclude_from_menu=True)
+
+
+class CategoryManager(MP_NodeManager.from_queryset(CategoryQuerySet)):
+    def get_queryset(self):
+        return CategoryQuerySet(self.model, using=self._db).order_by("path")

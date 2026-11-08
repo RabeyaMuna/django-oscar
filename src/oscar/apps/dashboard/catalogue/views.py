@@ -57,7 +57,7 @@ ProductTable, CategoryTable, AttributeOptionGroupTable, OptionTable = get_classe
     "dashboard.catalogue.tables",
     ("ProductTable", "CategoryTable", "AttributeOptionGroupTable", "OptionTable"),
 )
-(PopUpWindowCreateMixin, PopUpWindowUpdateMixin, PopUpWindowDeleteMixin) = get_classes(
+PopUpWindowCreateMixin, PopUpWindowUpdateMixin, PopUpWindowDeleteMixin = get_classes(
     "dashboard.views",
     ("PopUpWindowCreateMixin", "PopUpWindowUpdateMixin", "PopUpWindowDeleteMixin"),
 )
@@ -634,7 +634,7 @@ class CategoryCreateView(CategoryListMixin, generic.CreateView):
         # set child category if set in the URL kwargs
         initial = super().get_initial()
         if "parent" in self.kwargs:
-            initial["_ref_node_id"] = self.kwargs["parent"]
+            initial["treebeard_ref_node"] = self.kwargs["parent"]
         return initial
 
 

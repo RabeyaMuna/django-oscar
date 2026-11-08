@@ -36,8 +36,8 @@ from oscar.models.fields import AutoSlugField, NullCharField
 from oscar.models.fields.slugfield import SlugField
 from oscar.utils.models import get_image_upload_path
 
-CategoryQuerySet, ProductQuerySet = get_classes(
-    "catalogue.managers", ["CategoryQuerySet", "ProductQuerySet"]
+CategoryQuerySet, CategoryManager, ProductQuerySet = get_classes(
+    "catalogue.managers", ["CategoryQuerySet", "CategoryManager", "ProductQuerySet"]
 )
 ProductAttributesContainer = get_class(
     "catalogue.product_attributes", "ProductAttributesContainer"
@@ -179,7 +179,7 @@ class AbstractCategory(MP_Node):
     _slug_separator = "/"
     _full_name_separator = " > "
 
-    objects = CategoryQuerySet.as_manager()
+    objects = CategoryManager()
 
     def __str__(self):
         return self.full_name
@@ -205,7 +205,9 @@ class AbstractCategory(MP_Node):
         full_slug = cache.get(cache_key)
         if full_slug is None:
             parent_slug = (
-                parent_slug if parent_slug is not None else self.get_parent().full_slug
+                parent_slug
+                if parent_slug is not None
+                else self.__class__.objects.get_parent(self).full_slug
             )
             full_slug = "%s%s%s" % (parent_slug, self._slug_separator, self.slug)
             cache.set(cache_key, full_slug)
@@ -260,13 +262,13 @@ class AbstractCategory(MP_Node):
         self.refresh_from_db()
 
     def get_public_children(self):
-        children = self.get_children()
+        children = self.__class__.objects.get_children(self)
         return children.filter(is_public=True)
 
     @classmethod
-    def fix_tree(cls, destructive=False, fix_paths=False):
-        super().fix_tree(destructive, fix_paths)
-        for node in cls.get_root_nodes():
+    def fix_tree(cls, fix_paths=False, parent=None):
+        cls.objects.fix_tree(fix_paths=fix_paths, parent=parent)
+        for node in cls.objects.get_root_nodes():
             # ancestors_are_public *must* be True for root nodes, or all trees
             # will become non-public
             if not node.ancestors_are_public:
@@ -290,7 +292,7 @@ class AbstractCategory(MP_Node):
         if self.is_root():
             return [self]
 
-        return list(self.get_ancestors()) + [self]
+        return list(self.__class__.objects.get_ancestors(self)) + [self]
 
     def get_descendants_and_self(self):
         """
@@ -298,7 +300,7 @@ class AbstractCategory(MP_Node):
         if you don't want to include the category itself. It's a separate
         function as it's commonly used in templates.
         """
-        return self.get_tree(self)
+        return self.__class__.objects.get_tree(self)
 
     def get_url_cache_key(self):
         current_locale = get_language()
@@ -336,7 +338,7 @@ class AbstractCategory(MP_Node):
         return self.get_num_children() > 0
 
     def get_num_children(self):
-        return self.get_children().count()
+        return self.__class__.objects.get_children(self).count()
 
 
 class AbstractProductCategory(models.Model):

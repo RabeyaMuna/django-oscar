@@ -1,8 +1,10 @@
 import logging
 
+from django import http
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
+from django.shortcuts import get_object_or_404
 
 from oscar.apps.customer.signals import user_registered
 from oscar.core.compat import get_user_model
@@ -101,11 +103,15 @@ class AnonymousOrderMixin:
     def hash(self):
         return self.kwargs.get("hash")
 
+    def get_order(self):
+        # Check URL hash matches that for order to prevent spoof attacks
+        order = get_object_or_404(Order, user=None, number=self.order_number)
+        if not order.check_verification_hash(self.hash):
+            raise http.Http404()
+        return order
+
     def get_object(self):
-        try:
-            order = Order.objects.get(user=None, number=self.order_number)
-            if order.check_verification_hash(self.hash) and order.email == self.email:
-                return order
-        except (AttributeError, Order.DoesNotExist):
-            return None
+        order = self.get_order()
+        if order.email == self.email:
+            return order
         return None

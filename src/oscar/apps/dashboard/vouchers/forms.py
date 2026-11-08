@@ -1,7 +1,7 @@
 from django import forms
 from django.db import transaction
 from django.urls import reverse
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from oscar.apps.voucher.utils import get_unused_code
@@ -99,12 +99,13 @@ class VoucherSetForm(forms.ModelForm):
                 "dashboard:voucher-set-detail", kwargs={"pk": self.instance.pk}
             )
             raise forms.ValidationError(
-                mark_safe(
+                format_html(
                     _(
-                        "This cannot be used to delete vouchers (currently %s) in this set. "
-                        'You can do that on the <a href="%s">detail</a> page.'
-                    )
-                    % (self.instance.count, detail_url)
+                        "This cannot be used to delete vouchers (currently {}) in this set. "
+                        'You can do that on the <a href="{}">detail</a> page.'
+                    ),
+                    self.instance.count,
+                    detail_url,
                 )
             )
         return data
